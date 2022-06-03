@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ItemRepositoryTest {
 
-    ItemRepository itemRepository = new ItemRepository();
+   /* ItemRepository itemRepository = new ItemRepository();
 
     @AfterEach
     void afterEach() {
@@ -64,7 +64,7 @@ class ItemRepositoryTest {
         assertThat(findItem.getItemName()).isEqualTo(updateParam.getItemName());
         assertThat(findItem.getPrice()).isEqualTo(updateParam.getPrice());
         assertThat(findItem.getQuantity()).isEqualTo(updateParam.getQuantity());
-    }
+    }*/
 
 
 }
