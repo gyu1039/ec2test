@@ -1,42 +1,58 @@
 package hello.itemservice.domain.item;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class ItemRepository {
 
-    private static final Map<Long, Item> store = new HashMap<>();
-    private static long sequence = 0L;
+    @Autowired private JdbcTemplate jdbcTemplate;
 
     public Item save(Item item) {
-        item.setId(++sequence);
-        store.put(item.getId(), item);
+        String query = "Insert into item(itemName, price, quantity) values(?,?,?)";
+        jdbcTemplate.update(query, item.getItemName(), item.getPrice(), item.getQuantity());
+
         return item;
     }
 
     public Item findById(Long id) {
-        return store.get(id);
+        Item item1 = jdbcTemplate.queryForObject("select * from item where id = ?"
+                , (rs, rowNum) -> {
+                    Item item = new Item();
+                    item.setId(rs.getLong("id"));
+                    item.setItemName(rs.getString("itemName"));
+                    item.setPrice(rs.getInt("price"));
+                    item.setQuantity(rs.getInt("quantity"));
+                    return item;
+                }, new Long[]{id});
+        return item1;
     }
 
     public List<Item> findAll() {
-        return new ArrayList<>(store.values());
+        List<Item> results = jdbcTemplate.query("select * from item",
+                (rs, rowNum) -> {
+                    Item item = new Item();
+                    item.setId(rs.getLong("id"));
+                    item.setItemName(rs.getString("itemName"));
+                    item.setPrice(rs.getInt("price"));
+                    item.setQuantity(rs.getInt("quantity"));
+                    return item;
+                });
+        return results;
     }
 
     public void update(Long itemId, Item updateParam) {
-        Item findItem = findById(itemId);
-        findItem.setItemName(updateParam.getItemName());
-        findItem.setPrice(updateParam.getPrice());
-        findItem.setQuantity(updateParam.getQuantity());
+        jdbcTemplate.update("update item set itemname = ?, price = ?, quantity = ? where id = ?",
+                updateParam.getItemName(), updateParam.getPrice(), updateParam.getQuantity(), itemId);
 
     }
 
     public void clearStore() {
-        store.clear();
+        jdbcTemplate.update("delete from item");
     }
+
 
 }
