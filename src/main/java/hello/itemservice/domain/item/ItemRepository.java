@@ -9,7 +9,8 @@ import java.util.List;
 @Repository
 public class ItemRepository {
 
-    @Autowired private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     public Item save(Item item) {
         String query = "Insert into item(itemName, price, quantity) values(?,?,?)";
